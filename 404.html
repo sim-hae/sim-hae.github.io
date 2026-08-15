@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071012">
+  <title>페이지를 찾을 수 없음 · Simhae</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <style>
+    :root { --bg:#071012; --text:#eaffff; --muted:#718588; --neon:#00e8ef; --font-main:"Pretendard Variable",Pretendard,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif; }
+    * { box-sizing:border-box; }
+    body {
+      min-height:100svh; margin:0; display:grid; place-items:center;
+      background:
+        linear-gradient(rgba(0,247,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,247,255,.025) 1px, transparent 1px),
+        var(--bg);
+      background-size:44px 44px;
+      color:var(--text);
+      font-family:var(--font-main);
+    }
+    main { width:min(88vw,760px); }
+    p { color:var(--muted); }
+    h1 { margin:.2em 0; font-size:clamp(5rem,18vw,11rem); line-height:.85; letter-spacing:-.08em; }
+    h1 span { color:transparent; -webkit-text-stroke:1px var(--neon); text-shadow:0 0 22px rgba(0,247,255,.15); }
+    a { display:inline-block; margin-top:24px; padding:11px 16px; border:1px solid rgba(0,247,255,.35); color:var(--neon); text-decoration:none; }
+    a:hover { background:rgba(0,247,255,.07); }
+    .language-switcher {
+      position:fixed; top:22px; right:22px; display:inline-flex; padding:3px;
+      border:1px solid rgba(0,232,239,.2); border-radius:999px; background:rgba(0,0,0,.2);
+    }
+    .language-switcher button {
+      min-width:42px; padding:7px 9px; border:0; border-radius:999px;
+      color:var(--muted); background:transparent; font:700 .65rem var(--font-main); cursor:pointer;
+    }
+    .language-switcher button[aria-pressed="true"] { color:#001416; background:var(--neon); }
+    .language-switcher button:focus-visible { outline:2px solid var(--neon); outline-offset:3px; }
+  </style>
+</head>
+<body data-page="not-found">
+  <div class="language-switcher" role="group" aria-label="언어 선택" data-i18n-aria-label="aria.language">
+    <button type="button" data-language="ko" aria-pressed="true">한국어</button>
+    <button type="button" data-language="en" aria-pressed="false">EN</button>
+  </div>
+  <main>
+    <p data-i18n="notFound.label">페이지를 찾을 수 없음</p>
+    <h1>4<span>0</span>4</h1>
+    <p data-i18n="notFound.message">요청한 페이지를 찾을 수 없습니다.</p>
+    <a href="/" data-i18n="notFound.back">홈으로 돌아가기</a>
+  </main>
+  <script>
+    (() => {
+      const translations = {
+        ko: {
+          title: "페이지를 찾을 수 없음 · Simhae",
+          language: "언어 선택",
+          label: "페이지를 찾을 수 없음",
+          message: "요청한 페이지를 찾을 수 없습니다.",
+          back: "홈으로 돌아가기"
+        },
+        en: {
+          title: "Page not found · Simhae",
+          language: "Language selector",
+          label: "PAGE NOT FOUND",
+          message: "The page you requested could not be found.",
+          back: "Back home"
+        }
+      };
+      const buttons = [...document.querySelectorAll("[data-language]")];
+      const switcher = document.querySelector(".language-switcher");
+      const label = document.querySelector('[data-i18n="notFound.label"]');
+      const message = document.querySelector('[data-i18n="notFound.message"]');
+      const back = document.querySelector('[data-i18n="notFound.back"]');
+      const projectRoot = "/simhae-neon-profile/";
+      back.href = location.pathname.startsWith(projectRoot) ? projectRoot : "/";
+
+      const applyLanguage = (language, persist = true) => {
+        const selected = language === "en" ? "en" : "ko";
+        const copy = translations[selected];
+        document.documentElement.lang = selected;
+        document.title = copy.title;
+        switcher.setAttribute("aria-label", copy.language);
+        label.textContent = copy.label;
+        message.textContent = copy.message;
+        back.textContent = copy.back;
+        buttons.forEach((button) => {
+          button.setAttribute("aria-pressed", String(button.dataset.language === selected));
+        });
+        if (persist) {
+          try { localStorage.setItem("profile-language", selected); } catch {}
+        }
+      };
+
+      buttons.forEach((button) => {
+        button.addEventListener("click", () => applyLanguage(button.dataset.language));
+      });
+
+      let savedLanguage = null;
+      try { savedLanguage = localStorage.getItem("profile-language"); } catch {}
+      applyLanguage(savedLanguage, false);
+    })();
+  </script>
+</body>
+</html>
